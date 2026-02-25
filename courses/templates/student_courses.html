@@ -1,0 +1,12 @@
+<h1>Kurslar katalogi</h1>
+
+<ul>
+    {% for course in courses %}
+    <li>
+        <a href="{% url 'student_course_detail' course.id %}">{{ course.title }}</a>
+        - Narx: {{ course.price }}
+    </li>
+    {% empty %}
+    <li>Kurslar topilmadi</li>
+    {% endfor %}
+</ul>

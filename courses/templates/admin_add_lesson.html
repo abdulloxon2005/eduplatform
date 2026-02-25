@@ -1,0 +1,9 @@
+<h1>Dars qo‘shish - {{ module.title }}</h1>
+
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Saqlash</button>
+</form>
+
+<a href="{% url 'admin_lessons' module.course.id module.id %}">Orqaga</a>

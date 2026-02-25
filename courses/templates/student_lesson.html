@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ lesson.title }}</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        video {
+            width: 100%;
+            max-width: 720px;
+            margin-bottom: 20px;
+        }
+
+        .pdf-link {
+            display: inline-block;
+            margin: 15px 0;
+        }
+
+        .progress {
+            background: #eee;
+            width: 100%;
+            height: 22px;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: #4CAF50;
+            height: 100%;
+            width: {{ progress_percent }}%;
+            text-align: center;
+            color: white;
+            line-height: 22px;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        .completed-text {
+            color: green;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>{{ lesson.title }}</h1>
+
+<!-- ✅ PROGRESS BAR -->
+<div class="progress">
+    <div class="progress-bar">
+        {{ progress_percent }}%
+    </div>
+</div>
+
+<h3>Modul progress:</h3>
+<div class="progress">
+    <div class="progress-bar">
+        {{ module_progress_percent }}%
+    </div>
+</div>
+
+<hr>
+<h3>Modul darslari:</h3>
+
+<ul style="list-style:none; padding:0;">
+{% for l in module_lessons %}
+
+    {% if l.id in completed_ids %}
+        <!-- Tugatilgan -->
+        <li style="margin-bottom:8px;">
+            <a href="{% url 'student_lesson_view' lesson.module.course.id lesson.module.id l.id %}"
+               style="color:green; font-weight:bold;">
+               ✔ {{ l.title }}
+            </a>
+        </li>
+
+    {% elif l.order == lesson.order or l.order == lesson.order|add:1 %}
+        <!-- Hozirgi yoki keyingi ochiq -->
+        <li style="margin-bottom:8px;">
+            <a href="{% url 'student_lesson_view' lesson.module.course.id lesson.module.id l.id %}">
+                ▶ {{ l.title }}
+            </a>
+        </li>
+
+    {% else %}
+        <!-- Qulflangan -->
+        <li style="margin-bottom:8px; color:gray;">
+            🔒 {{ l.title }}
+        </li>
+    {% endif %}
+
+{% endfor %}
+</ul>
+
+<hr>
+
+<!-- ✅ TEXT CONTENT -->
+{% if lesson.content %}
+    <div>
+        <h3>Dars matni:</h3>
+        <p>{{ lesson.content|linebreaks }}</p>
+    </div>
+{% endif %}
+
+<!-- ✅ VIDEO (agar mavjud bo‘lsa) -->
+{% if lesson.video %}
+    <video controls>
+        <source src="{{ lesson.video.url }}">
+        Brauzeringiz videoni qo'llab-quvvatlamaydi.
+    </video>
+{% endif %}
+
+<!-- ✅ PDF (agar mavjud bo‘lsa) -->
+{% if lesson.pdf %}
+    <div>
+        <a class="pdf-link" href="{{ lesson.pdf.url }}" target="_blank">
+            📄 PDF yuklab olish
+        </a>
+    </div>
+{% endif %}
+
+<!-- ✅ Agar umuman material bo‘lmasa -->
+{% if not lesson.video and not lesson.pdf and not lesson.content %}
+    <p>Bu darsda hali material mavjud emas.</p>
+{% endif %}
+
+<!-- ✅ COMPLETED BUTTON -->
+{% if not is_completed %}
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit">Darsni tugatdim ✅</button>
+    </form>
+{% else %}
+    <p class="completed-text">✔ Bu dars tugatilgan</p>
+{% endif %}
+
+</body>
+</html>

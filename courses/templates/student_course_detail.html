@@ -1,0 +1,37 @@
+<h1>{{ course.title }}</h1>
+<p>{{ course.description }}</p>
+<p>Davomiyligi: {{ course.duration }} dars</p>
+
+<h2>Modullar</h2>
+
+{% if modules %}
+<ul>
+    {% for module in modules %}
+    <li>
+        <strong>{{ module.title }}</strong>
+
+        {% with lessons=module.lessons.all|dictsort:"order" %}
+        {% if lessons %}
+        <ul>
+            {% for lesson in lessons %}
+            <li>
+                {% if lesson.preview or enrolled %}
+                    <a href="{% url 'student_lesson_view' course.id module.id lesson.id %}">
+                        {{ lesson.title }}
+                    </a>
+                {% else %}
+                    {{ lesson.title }} 🔒
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+            <p>Darslar mavjud emas</p>
+        {% endif %}
+        {% endwith %}
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>Modullar mavjud emas</p>
+{% endif %}

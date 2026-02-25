@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Kurslar</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 30px; background: #f0f2f5; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+        th { background: #007bff; color: white; }
+        a { text-decoration: none; margin-right: 5px; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h1>Admin Kurslar</h1>
+    <a href="{% url 'admin_add_course' %}">Yangi kurs qo‘shish</a>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nom</th>
+                {% comment %} <th>Kategoriya</th> {% endcomment %}
+                <th>Narx</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course in courses %}
+            <tr>
+                <td>{{ course.id }}</td>
+                <td>{{ course.title }}</td>
+                {% comment %} <td>{{ course.category }}</td> {% endcomment %}
+                <td>{{ course.price }}</td>
+                <td>
+                    <a href="{% url 'admin_edit_course' course.id %}">Tahrirlash</a>
+                    <a href="{% url 'admin_delete_course' course.id %}">O‘chirish</a>
+                    <a href="{% url 'admin_modules' course.id %}">Modullarni boshqarish</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5">Kurs topilmadi</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div style="margin-top:20px;">
+        <a href="{% url 'admin_dashboard' %}">Orqaga</a>
+    </div>
+</body>
+</html>

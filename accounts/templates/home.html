@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduPlatform</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #a855f7;
+    --primary-dark: #7c3aed;
+    --pink: #ec4899;
+    --gradient: linear-gradient(135deg, #a855f7, #ec4899);
+    --bg: #f9f5ff;
+    --dark: #1a1a2e;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --card-bg: #fff;
+    --border: #e5e7eb;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); }
+
+  /* NAV */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 60px; height: 64px; background: #fff;
+    border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100;
+  }
+  .logo { display: flex; align-items: center; gap: 8px; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1.2rem; color: var(--text); text-decoration: none; }
+  .logo-icon { width: 32px; height: 32px; background: var(--gradient); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+  .logo-icon svg { width: 18px; height: 18px; fill: #fff; }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a { text-decoration: none; color: var(--text); font-size: 0.95rem; font-weight: 500; transition: color .2s; }
+  .nav-links a:hover { color: var(--primary); }
+  .nav-actions { display: flex; gap: 12px; align-items: center; }
+  .btn-ghost { background: none; border: none; cursor: pointer; font-size: 0.95rem; font-weight: 600; color: var(--text); padding: 8px 16px; border-radius: 8px; transition: background .2s; font-family: 'DM Sans', sans-serif; }
+  .btn-ghost:hover { background: #f3f4f6; }
+  .btn-primary { background: var(--gradient); border: none; cursor: pointer; font-size: 0.95rem; font-weight: 700; color: #fff; padding: 10px 20px; border-radius: 10px; transition: opacity .2s, transform .2s; font-family: 'DM Sans', sans-serif; }
+  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  /* PAGES */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* HERO */
+  .hero {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 80px 60px; min-height: calc(100vh - 64px - 80px);
+    max-width: 1200px; margin: 0 auto;
+  }
+  .hero-left { max-width: 480px; }
+  .hero-left h1 { font-family: 'Nunito', sans-serif; font-size: 3.2rem; font-weight: 900; line-height: 1.1; margin-bottom: 16px; }
+  .hero-left h1 span { color: var(--primary); }
+  .hero-left p { color: var(--muted); font-size: 1rem; line-height: 1.6; margin-bottom: 32px; }
+  .hero-btns { display: flex; gap: 12px; margin-bottom: 48px; }
+  .btn-outline { background: none; border: 2px solid var(--border); cursor: pointer; font-size: 0.95rem; font-weight: 600; color: var(--text); padding: 10px 20px; border-radius: 10px; transition: border-color .2s; font-family: 'DM Sans', sans-serif; }
+  .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+  .stats { display: flex; gap: 32px; }
+  .stat-num { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.5rem; color: var(--primary); }
+  .stat-label { font-size: 0.8rem; color: var(--muted); }
+  .hero-right { position: relative; }
+  .hero-img { width: 460px; height: 420px; object-fit: cover; border-radius: 20px; }
+  .hero-badge {
+    position: absolute; bottom: -20px; left: -20px;
+    background: #fff; border-radius: 14px; padding: 12px 18px;
+    display: flex; align-items: center; gap: 10px;
+    box-shadow: 0 8px 30px rgba(168,85,247,.2);
+    font-weight: 700; font-size: 0.9rem;
+  }
+  .badge-icon { width: 36px; height: 36px; background: #f3e8ff; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+
+  /* WHY SECTION */
+  .section { padding: 80px 60px; max-width: 1200px; margin: 0 auto; }
+  .section-title { text-align: center; font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 2rem; margin-bottom: 8px; }
+  .section-sub { text-align: center; color: var(--muted); margin-bottom: 48px; }
+  .why-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .why-card { background: #fff; border-radius: 16px; padding: 32px; border: 1px solid var(--border); transition: box-shadow .2s, transform .2s; }
+  .why-card:hover { box-shadow: 0 8px 30px rgba(168,85,247,.12); transform: translateY(-4px); }
+  .why-icon { width: 48px; height: 48px; background: #f3e8ff; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
+  .why-icon svg { width: 22px; height: 22px; stroke: var(--primary); fill: none; stroke-width: 2; }
+  .why-card h3 { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1.05rem; margin-bottom: 8px; }
+  .why-card p { color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
+
+  /* COURSES */
+  .courses-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .courses-header h2 { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.8rem; }
+  .courses-header p { color: var(--muted); font-size: 0.9rem; }
+  .btn-link { background: none; border: 2px solid var(--border); border-radius: 10px; padding: 8px 18px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; font-family: 'DM Sans', sans-serif; color: var(--text); transition: border-color .2s; }
+  .btn-link:hover { border-color: var(--primary); color: var(--primary); }
+  .courses-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 32px; }
+  .course-card { background: #fff; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); transition: box-shadow .2s, transform .2s; }
+  .course-card:hover { box-shadow: 0 8px 30px rgba(168,85,247,.12); transform: translateY(-4px); }
+  .course-img { width: 100%; height: 200px; object-fit: cover; background: #e5e7eb; }
+  .course-body { padding: 20px; }
+  .course-cat { font-size: 0.78rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+  .course-title { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1rem; margin-bottom: 10px; }
+  .course-meta { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 0.85rem; margin-bottom: 14px; }
+  .course-footer { display: flex; align-items: center; justify-content: space-between; }
+  .course-price { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 1.1rem; color: var(--primary); }
+  .btn-sm { background: var(--gradient); border: none; cursor: pointer; color: #fff; padding: 8px 18px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; font-family: 'DM Sans', sans-serif; transition: opacity .2s; }
+  .btn-sm:hover { opacity: .9; }
+
+  /* CTA BANNER */
+  .cta-banner {
+    background: var(--gradient); margin: 0; padding: 72px 60px; text-align: center;
+  }
+  .cta-banner h2 { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 2.2rem; color: #fff; margin-bottom: 12px; }
+  .cta-banner p { color: rgba(255,255,255,0.85); margin-bottom: 32px; }
+  .btn-white { background: #fff; border: none; cursor: pointer; color: var(--primary); font-weight: 800; padding: 14px 28px; border-radius: 10px; font-size: 1rem; font-family: 'DM Sans', sans-serif; transition: transform .2s; display: inline-flex; align-items: center; gap: 8px; }
+  .btn-white:hover { transform: translateY(-2px); }
+
+  /* FOOTER */
+  footer { background: #111827; color: #9ca3af; padding: 60px 60px 30px; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 48px; }
+  .footer-logo { display: flex; align-items: center; gap: 8px; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1.1rem; color: #fff; margin-bottom: 12px; }
+  .footer-desc { font-size: 0.875rem; line-height: 1.6; }
+  .footer-col h4 { color: #fff; font-weight: 700; margin-bottom: 16px; font-size: 0.95rem; }
+  .footer-col ul { list-style: none; }
+  .footer-col li { margin-bottom: 8px; }
+  .footer-col a { text-decoration: none; color: #9ca3af; font-size: 0.875rem; transition: color .2s; }
+  .footer-col a:hover { color: #fff; }
+  .footer-bottom { border-top: 1px solid #374151; padding-top: 24px; text-align: center; font-size: 0.85rem; }
+
+ 
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a class="logo" href="#" onclick="showPage('home')">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24"><path d="M4 19V6.2C4 5.08 4.9 4.2 6 4.2h12c1.1 0 2 .88 2 2V17a1 1 0 01-1 1H5a1 1 0 00-1 1zm0 0a1 1 0 001 1h13"/><path d="M8 7h8M8 11h5"/></svg>
+    </div>
+    EduPlatform
+  </a>
+  <ul class="nav-links">
+    <li><a href="#" onclick="showPage('home')">Kurslar</a></li>
+    <li><a href="#">Biz haqimizda</a></li>
+    <li><a href="#">Aloqa</a></li>
+  </ul>
+  <div class="nav-actions">
+    <button class="btn-ghost" onclick="location.href='{% url 'login' %}'">Kirish</button>
+    <button class="btn-primary" onclick="location.href='{% url 'register' %}'">Ro'yxatdan o'tish</button>
+  </div>
+</nav>
+
+<!-- HOME PAGE -->
+<div id="page-home" class="page active">
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-left">
+      <h1>Kelajakni bugun<br><span>o'rganing</span></h1>
+      <p>Professional onlayn kurslar orqali o'z mahoratingizni oshiring va karyerangizni rivojlantiring</p>
+      <div class="hero-btns">
+        <button class="btn-primary" onclick="showPage('register')" style="padding:12px 28px;font-size:1rem;">Boshlash →</button>
+        <button class="btn-outline">Kurslarni ko'rish</button>
+      </div>
+      <div class="stats">
+        <div><div class="stat-num">10,000+</div><div class="stat-label">Talabalar</div></div>
+        <div><div class="stat-num">500+</div><div class="stat-label">Kurslar</div></div>
+        <div><div class="stat-num">100+</div><div class="stat-label">Mutaxassislar</div></div>
+        <div><div class="stat-num">95%</div><div class="stat-label">Qoniqish</div></div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="img-placeholder">
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+      </div>
+      <div class="hero-badge">
+        <div class="badge-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+        </div>
+        <div><div style="font-size:.7rem;color:#6b7280;">Sertifikatlar</div><div>5000+</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHY -->
+  <div style="background:#fff;padding:20px 0;">
+    <div class="section">
+      <h2 class="section-title">Nima uchun bizni tanlash kerak?</h2>
+      <p class="section-sub">Zamonaviy texnologiyalar va professional yondashuv orqali sifatli ta'lim</p>
+      <div class="why-grid">
+        <div class="why-card">
+          <div class="why-icon">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12h8M8 8h8M8 16h5"/></svg>
+          </div>
+          <h3>Keng kurslar katalogi</h3>
+          <p>Turli sohalarda professional kurslar</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon">
+            <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><circle cx="12" cy="13" r="2"/><path d="M12 15v3"/></svg>
+          </div>
+          <h3>Video darslar</h3>
+          <p>Sifatli video materiallar bilan o'rganing</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+          </div>
+          <h3>Sertifikat</h3>
+          <p>Kurs tugagach rasmiy sertifikat oling</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon">
+            <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 16l4-4 4 4 4-4"/></svg>
+          </div>
+          <h3>Progress kuzatuvi</h3>
+          <p>O'z muvaffaqiyatingizni kuzatib boring</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon">
+            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+          </div>
+          <h3>Jamoa bilan ishlash</h3>
+          <p>Boshqa talabalar bilan fikr almashing</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon">
+            <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          </div>
+          <h3>Test tizimi</h3>
+          <p>Bilimingizni sinab ko'ring</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COURSES -->
+  <div class="section">
+    <div class="courses-header">
+      <div>
+        <h2>Mashhur kurslar</h2>
+        <p style="color:var(--muted);font-size:.9rem;margin-top:4px;">Eng ko'p tanlanayotgan kurslar</p>
+      </div>
+      <button class="btn-link">Barchasini ko'rish →</button>
+    </div>
+    <div class="courses-grid">
+      <div class="course-card">
+        <div class="course-img-placeholder">💻</div>
+        <div class="course-body">
+          <div class="course-cat">Dasturlash</div>
+          <div class="course-title">Web Dasturlash Asoslari</div>
+          <div class="course-meta">
+            <span>⭐ 4.8</span>
+            <span>👥 1250</span>
+          </div>
+          <div class="course-footer">
+            <div class="course-price">299,000 so'm</div>
+            <button class="btn-sm">Ko'rish</button>
+          </div>
+        </div>
+      </div>
+      <div class="course-card">
+        <div class="course-img-placeholder">🐍</div>
+        <div class="course-body">
+          <div class="course-cat">Dasturlash</div>
+          <div class="course-title">Python asoslari</div>
+          <div class="course-meta">
+            <span>⭐ 4.9</span>
+            <span>👥 2100</span>
+          </div>
+          <div class="course-footer">
+            <div class="course-price">399,000 so'm</div>
+            <button class="btn-sm">Ko'rish</button>
+          </div>
+        </div>
+      </div>
+      <div class="course-card">
+        <div class="course-img-placeholder">📱</div>
+        <div class="course-body">
+          <div class="course-cat">Marketing</div>
+          <div class="course-title">Digital Marketing</div>
+          <div class="course-meta">
+            <span>⭐ 4.7</span>
+            <span>👥 890</span>
+          </div>
+          <div class="course-footer">
+            <div class="course-price">249,000 so'm</div>
+            <button class="btn-sm">Ko'rish</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-banner">
+    <h2>O'z bilimingizni yangi bosqichga olib chiqing</h2>
+    <p>Bugun ro'yxatdan o'ting va professional kurslarimizga kirish imkoniyatiga ega bo'ling</p>
+    <button class="btn-white" onclick="showPage('register')">Bepul boshlash →</button>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">
+          <div class="logo-icon" style="width:28px;height:28px;">
+            <svg viewBox="0 0 24 24" style="width:16px;height:16px;" fill="white"><path d="M4 19V6.2C4 5.08 4.9 4.2 6 4.2h12c1.1 0 2 .88 2 2V17a1 1 0 01-1 1H5a1 1 0 00-1 1zm0 0a1 1 0 001 1h13"/></svg>
+          </div>
+          EduPlatform
+        </div>
+        <p class="footer-desc">Zamonaviy onlayn ta'lim platformasi</p>
+      </div>
+      <div class="footer-col">
+        <h4>Platforma</h4>
+        <ul>
+          <li><a href="#">Kurslar</a></li>
+          <li><a href="#">O'qituvchi bo'lish</a></li>
+          <li><a href="#">Narxlar</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Kompaniya</h4>
+        <ul>
+          <li><a href="#">Biz haqimizda</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Aloqa</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Yordam</h4>
+        <ul>
+          <li><a href="#">FAQ</a></li>
+          <li><a href="#">Support</a></li>
+          <li><a href="#">Maxfiylik</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">© 2026 EduPlatform. Barcha huquqlar himoyalangan.</div>
+  </footer>
+</div>
+</body>
+</html>

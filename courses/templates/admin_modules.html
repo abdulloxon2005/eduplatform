@@ -1,0 +1,15 @@
+<h1>Modullar - {{ course.title }}</h1>
+<a href="{% url 'admin_add_module' course.id %}">Yangi modul qo‘shish</a>
+
+<ul>
+    {% for module in modules %}
+    <li>
+        {{ module.title }} (Order: {{ module.order }}) -
+        <a href="{% url 'admin_lessons' course.id module.id %}">Darslar</a>
+    </li>
+    {% empty %}
+    <li>Modul topilmadi</li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'admin_courses' %}">Orqaga</a>
