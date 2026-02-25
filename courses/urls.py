@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (admin_edit_lesson, admin_modules, admin_add_module, 
                     admin_lessons, admin_add_lesson,admin_delete_lesson, student_courses,
-                     student_lesson_view,student_courses, student_course_detail, student_lesson_view)
+                     student_lesson_view,student_courses, student_course_detail, student_lesson_view,generate_certificate)
 from .views import (
     admin_courses,
     admin_add_course,
@@ -29,4 +29,6 @@ urlpatterns = [
     path('student/courses/', student_courses, name='student_courses'),
     path('student/courses/<int:course_id>/', student_course_detail, name='student_course_detail'),
     path('student/courses/<int:course_id>/modules/<int:module_id>/lessons/<int:lesson_id>/',student_lesson_view, name='student_lesson_view'),
+    path(
+    'student/course/<int:course_id>/certificate/',generate_certificate,name='generate_certificate'),
 ]

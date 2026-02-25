@@ -3,6 +3,17 @@ from django.contrib.auth.decorators import login_required
 from .models import Course, Module, Lesson, Enrollment,LessonProgress
 from .forms import CourseForm, ModuleForm, LessonForm
 from django.http import JsonResponse
+from django.http import HttpResponse
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import inch
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfbase import pdfmetrics
+from reportlab.lib.styles import getSampleStyleSheet
+import io
+from datetime import date
 
 @login_required
 def admin_courses(request):
@@ -347,3 +358,57 @@ def student_lesson_view(request, course_id, module_id, lesson_id):
     
 
 
+@login_required
+def generate_certificate(request, course_id):
+
+    course = get_object_or_404(Course, id=course_id)
+
+    total_lessons = Lesson.objects.filter(
+        module__course=course
+    ).count()
+
+    completed_lessons = LessonProgress.objects.filter(
+        student=request.user,
+        lesson__module__course=course,
+        completed=True
+    ).count()
+
+    # ❌ Agar kurs tugamagan bo‘lsa
+    if total_lessons != completed_lessons:
+        return HttpResponse("Kurs hali to‘liq tugatilmagan.")
+
+    # ✅ PDF yaratish
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+
+    elements = []
+    styles = getSampleStyleSheet()
+
+    elements.append(Paragraph("<b>SERTIFIKAT</b>", styles['Title']))
+    elements.append(Spacer(1, 0.5 * inch))
+
+    elements.append(
+        Paragraph(
+            f"{request.user.username} muvaffaqiyatli tarzda "
+            f"{course.title} kursini tugatdi.",
+            styles['Normal']
+        )
+    )
+
+    elements.append(Spacer(1, 0.5 * inch))
+
+    elements.append(
+        Paragraph(
+            f"Sana: {date.today()}",
+            styles['Normal']
+        )
+    )
+
+    doc.build(elements)
+
+    buffer.seek(0)
+
+    response = HttpResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="certificate_{course.id}.pdf"'
+
+    return response

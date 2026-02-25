@@ -153,6 +153,13 @@
 {% else %}
     <p class="completed-text">✔ Bu dars tugatilgan</p>
 {% endif %}
+{% if progress_percent == 100 %}
+    <hr>
+    <a href="{% url 'generate_certificate' lesson.module.course.id %}">
+        🎓 Sertifikatni yuklab olish
+    </a>
+{% endif %}
+
 
 </body>
 </html>
