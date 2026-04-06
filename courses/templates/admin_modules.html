@@ -1,15 +1,33 @@
-<h1>Modullar - {{ course.title }}</h1>
-<a href="{% url 'admin_add_module' course.id %}">Yangi modul qo‘shish</a>
+{% extends "base.html" %}
+{% block title %}Modullar — {{ course.title }} | EduPlatform{% endblock %}
 
-<ul>
-    {% for module in modules %}
-    <li>
-        {{ module.title }} (Order: {{ module.order }}) -
-        <a href="{% url 'admin_lessons' course.id module.id %}">Darslar</a>
-    </li>
-    {% empty %}
-    <li>Modul topilmadi</li>
-    {% endfor %}
-</ul>
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1>Modullar — {{ course.title }}</h1>
+            <p>Kurs modullarini boshqaring</p>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <a href="{% url 'admin_add_module' course.id %}" class="btn btn-primary">+ Yangi modul</a>
+            <a href="{% url 'admin_courses' %}" class="back-btn">← Kurslar</a>
+        </div>
+    </div>
 
-<a href="{% url 'admin_courses' %}">Orqaga</a>
+    <ul class="item-list">
+        {% for module in modules %}
+        <li>
+            <div class="item-info">
+                <h4>{{ module.title }}</h4>
+                <span>Tartib: {{ module.order }}</span>
+            </div>
+            <div class="actions">
+                <a href="{% url 'admin_lessons' course.id module.id %}" class="action-btn btn-toggle">Darslar</a>
+            </div>
+        </li>
+        {% empty %}
+        <li class="empty-state">Modul topilmadi</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

@@ -1,51 +1,63 @@
-<!DOCTYPE html>
-<html lang="uz">
-<head>
-    <meta charset="UTF-8">
-    <title>Admin Kurslar</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 30px; background: #f0f2f5; }
-        table { width: 100%; border-collapse: collapse; background: white; }
-        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
-        th { background: #007bff; color: white; }
-        a { text-decoration: none; margin-right: 5px; }
-        a:hover { text-decoration: underline; }
-    </style>
-</head>
-<body>
-    <h1>Admin Kurslar</h1>
-    <a href="{% url 'admin_add_course' %}">Yangi kurs qo‘shish</a>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nom</th>
-                {% comment %} <th>Kategoriya</th> {% endcomment %}
-                <th>Narx</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for course in courses %}
-            <tr>
-                <td>{{ course.id }}</td>
-                <td>{{ course.title }}</td>
-                {% comment %} <td>{{ course.category }}</td> {% endcomment %}
-                <td>{{ course.price }}</td>
-                <td>
-                    <a href="{% url 'admin_edit_course' course.id %}">Tahrirlash</a>
-                    <a href="{% url 'admin_delete_course' course.id %}">O‘chirish</a>
-                    <a href="{% url 'admin_modules' course.id %}">Modullarni boshqarish</a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="5">Kurs topilmadi</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+{% extends "base.html" %}
+{% block title %}Admin Kurslar | EduPlatform{% endblock %}
 
-    <div style="margin-top:20px;">
-        <a href="{% url 'admin_dashboard' %}">Orqaga</a>
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1>Kurslarni boshqarish</h1>
+            <p>Barcha kurslarni ko'rish, tahrirlash va yangilarini qo'shish.</p>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <a href="{% url 'admin_add_course' %}" class="btn btn-primary">+ Yangi kurs</a>
+            <a href="{% url 'admin_dashboard' %}" class="back-btn">← Orqaga</a>
+        </div>
     </div>
-</body>
-</html>
+
+    <div class="table-card">
+        <div class="table-head">
+            <h2>Kurslar ro'yxati</h2>
+            <span>{{ courses|length }} ta kurs</span>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nomi</th>
+                        <th>Kategoriya</th>
+                        <th>Narxi</th>
+                        <th>Chegirma</th>
+                        <th>Amallar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for course in courses %}
+                    <tr>
+                        <td><strong style="color:var(--muted);">#{{ course.id }}</strong></td>
+                        <td><strong>{{ course.title }}</strong></td>
+                        <td>{{ course.category|default:"—" }}</td>
+                        <td>{{ course.price }} so'm</td>
+                        <td>{% if course.discount %}{{ course.discount }}%{% else %}—{% endif %}</td>
+                        <td>
+                            <div class="actions">
+                                <a href="{% url 'admin_edit_course' course.id %}" class="action-btn btn-edit">Tahrirlash</a>
+                                <a href="{% url 'admin_modules' course.id %}" class="action-btn btn-toggle">Modullar</a>
+                                <form method="POST" action="{% url 'admin_delete_course' course.id %}" style="display:inline;" onsubmit="return confirm('Kursni o\'chirmoqchimisiz?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="action-btn btn-delete">O'chirish</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6"><div class="empty-state">Kurs topilmadi</div></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

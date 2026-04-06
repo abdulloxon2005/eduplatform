@@ -1,12 +1,38 @@
-<h1>Kurslar katalogi</h1>
+{% extends "base.html" %}
+{% block title %}Kurslar katalogi | EduPlatform{% endblock %}
 
-<ul>
-    {% for course in courses %}
-    <li>
-        <a href="{% url 'student_course_detail' course.id %}">{{ course.title }}</a>
-        - Narx: {{ course.price }}
-    </li>
-    {% empty %}
-    <li>Kurslar topilmadi</li>
-    {% endfor %}
-</ul>
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1>📚 Kurslar katalogi</h1>
+            <p>Barcha mavjud kurslarni ko'ring va o'rganishni boshlang</p>
+        </div>
+        <a href="{% url 'student_dashboard' %}" class="back-btn">← Dashboard</a>
+    </div>
+
+    <div class="courses-grid">
+        {% for course in courses %}
+        <div class="course-card">
+            {% if course.cover_image %}
+            <img src="{{ course.cover_image.url }}" alt="{{ course.title }}" style="width:100%; height:200px; object-fit:cover;">
+            {% else %}
+            <div style="width:100%; height:200px; background:linear-gradient(135deg, #f3e8ff, #fce7f3); display:flex; align-items:center; justify-content:center; font-size:3rem;">📘</div>
+            {% endif %}
+            <div class="course-card-body">
+                <h3>{{ course.title }}</h3>
+                <p>{{ course.description|truncatewords:20 }}</p>
+                <div class="course-card-footer">
+                    <strong style="color:var(--primary); font-family:'Nunito',sans-serif; font-size:1.1rem;">
+                        {% if course.price > 0 %}{{ course.price }} so'm{% else %}Bepul{% endif %}
+                    </strong>
+                    <a href="{% url 'student_course_detail' course.id %}" class="btn btn-primary btn-sm">Ko'rish →</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-state" style="grid-column:1/-1;">Hozircha kurslar mavjud emas</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

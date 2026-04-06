@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Kurs tugallandi! | EduPlatform{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="completed-page">
+        <div class="emoji">🎉</div>
+        <h1>Tabriklaymiz!</h1>
+        <p>Siz "{{ course.title }}" kursini muvaffaqiyatli tugatdingiz!</p>
+        <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+            <a href="{% url 'generate_certificate' course.id %}" class="btn btn-primary">🎓 Sertifikat olish</a>
+            <a href="{% url 'student_courses' %}" class="btn btn-light">📚 Boshqa kurslar</a>
+            <a href="{% url 'student_dashboard' %}" class="btn btn-ghost">🏠 Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

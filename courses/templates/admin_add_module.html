@@ -1,9 +1,22 @@
-<h1>Modul qo‘shish - {{ course.title }}</h1>
+{% extends "base.html" %}
+{% block title %}Modul qo'shish | EduPlatform{% endblock %}
 
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Saqlash</button>
-</form>
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1>Modul qo'shish — {{ course.title }}</h1>
+            <p>Yangi modul ma'lumotlarini kiriting</p>
+        </div>
+        <a href="{% url 'admin_modules' course.id %}" class="back-btn">← Orqaga</a>
+    </div>
 
-<a href="{% url 'admin_modules' course.id %}">Orqaga</a>
+    <div class="form-card">
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary" style="width:100%; margin-top:16px;">Saqlash</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,81 +1,102 @@
-<!DOCTYPE html>
-<html lang="uz">
-<head>
-    <meta charset="UTF-8">
-    <title>Foydalanuvchilarni boshqarish</title>
-    <style>
-        body { font-family: Arial, sans-serif; background: #f0f2f5; padding: 30px; }
-        h1 { color: #333; }
-        table { width: 100%; border-collapse: collapse; background: white; }
-        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
-        th { background: #007bff; color: white; }
-        a { text-decoration: none; margin-right: 5px; }
-        .actions a { color: #007bff; }
-        .actions a:hover { text-decoration: underline; }
-        .search { margin-bottom: 15px; }
-        .role-btn { padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer; }
-        .role-admin { background: #28a745; color: white; }
-        .role-student { background: #ffc107; color: white; }
-    </style>
-</head>
-<body>
-    <h1>Foydalanuvchilarni boshqarish</h1>
+{% extends "base.html" %}
+{% block title %}Foydalanuvchilarni boshqarish | EduPlatform{% endblock %}
 
-    <!-- Qidiruv -->
-    <div class="search">
-        <form method="GET">
-            <input type="text" name="q" placeholder="Qidiruv..." value="{{ request.GET.q }}">
-            <button type="submit">Qidirish</button>
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1>Foydalanuvchilarni boshqarish</h1>
+            <p>Platformadagi foydalanuvchilarni qidirish, bloklash, o'chirish va rollarini almashtirish mumkin.</p>
+        </div>
+        <a href="{% url 'admin_dashboard' %}" class="back-btn">← Orqaga</a>
+    </div>
+
+    <div class="search-card">
+        <form method="GET" class="search-form">
+            <input type="text" name="q" placeholder="Username bo'yicha qidiruv..." value="{{ request.GET.q }}">
+            <button type="submit" class="btn btn-primary">Qidirish</button>
         </form>
     </div>
 
-    <!-- Foydalanuvchilar jadvali -->
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user in users %}
-            <tr>
-                <td>{{ user.id }}</td>
-                <td>{{ user.username }}</td>
-                <td>{{ user.email }}</td>
-                <td>{{ user.phone }}</td>
-                <td>{{ user.role }}</td>
-                <td>{% if user.is_active %}Aktiv{% else %}Blok{% endif %}</td>
-                <td class="actions">
-                    <!-- Aktiv/Blok -->
-                    <a href="{% url 'toggle_active' user.id %}">
-                        {% if user.is_active %}Bloklash{% else %}Aktivlashtirish{% endif %}
-                    </a>
+    <div class="table-card">
+        <div class="table-head">
+            <h2>Foydalanuvchilar ro'yxati</h2>
+            <span>Jadval orqali barcha foydalanuvchilarni boshqaring</span>
+        </div>
 
-                    <!-- O‘chirish -->
-                    <a href="{% url 'delete_user' user.id %}">O‘chirish</a>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Foydalanuvchi</th>
+                        <th>Email</th>
+                        <th>Telefon</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Amallar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td><strong style="color:var(--muted);">#{{ user.id }}</strong></td>
+                        <td><strong>{{ user.username }}</strong></td>
+                        <td>{{ user.email|default:"—" }}</td>
+                        <td>{{ user.phone|default:"—" }}</td>
+                        <td>
+                            {% if user.role == "student" %}
+                            <span class="badge badge-student">Student</span>
+                            {% else %}
+                            <span class="badge badge-admin">Admin</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.is_active %}
+                            <span class="badge badge-active">Aktiv</span>
+                            {% else %}
+                            <span class="badge badge-blocked">Bloklangan</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="actions">
+                                <form method="POST" action="{% url 'toggle_active' user.id %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="action-btn btn-toggle">
+                                        {% if user.is_active %}Bloklash{% else %}Aktivlashtirish{% endif %}
+                                    </button>
+                                </form>
 
-                    <!-- Role o‘zgartirish -->
-                    {% if user.role == "student" %}
-                        <a href="{% url 'change_role' user.id %}" class="role-btn role-admin">Adminga o‘zgartirish</a>
-                    {% else %}
-                        <a href="{% url 'change_role' user.id %}" class="role-btn role-student">Studentga o‘zgartirish</a>
-                    {% endif %}
-                </td>
-            </tr>
-            {% empty %}
-            <tr><td colspan="7">Foydalanuvchi topilmadi</td></tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                                <form method="POST" action="{% url 'delete_user' user.id %}" style="display:inline;" onsubmit="return confirm('Rostdan o\'chirmoqchimisiz?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="action-btn btn-delete">O'chirish</button>
+                                </form>
 
-    <div style="margin-top:20px;">
-        <a href="{% url 'admin_dashboard' %}">Orqaga</a>
+                                <form method="POST" action="{% url 'change_role' user.id %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    {% if user.role == "student" %}
+                                    <button type="submit" class="action-btn btn-role-admin">Adminga o'tkazish</button>
+                                    {% else %}
+                                    <button type="submit" class="action-btn btn-role-student">Studentga o'tkazish</button>
+                                    {% endif %}
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7">
+                            <div class="empty-state">Foydalanuvchi topilmadi</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
-</body>
-</html>
+
+    <div class="footer-back">
+        <a href="{% url 'admin_dashboard' %}">← Admin panelga qaytish</a>
+    </div>
+</div>
+{% endblock %}

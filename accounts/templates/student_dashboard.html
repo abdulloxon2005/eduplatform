@@ -1,6 +1,85 @@
-<h1>Salom User 🎓</h1>
+{% extends "base.html" %}
+{% block title %}Student Dashboard | EduPlatform{% endblock %}
 
-<p>Xush kelibsiz {{ request.user.username }}</p>
-<a href="{% url 'student_courses' %}">courses</a>
+{% block content %}
+<div class="container">
+    <div class="topbar">
+        <div class="brand">
+            <div class="brand-icon">🎓</div>
+            EduPlatform Student
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <a href="{% url 'student_courses' %}" class="btn btn-primary">Mening kurslarim</a>
+            <form method="POST" action="{% url 'logout' %}" class="logout-form">
+                {% csrf_token %}
+                <button type="submit">Chiqish</button>
+            </form>
+        </div>
+    </div>
 
-<a href="{% url 'login' %}">Logout</a>
+    <section class="hero-card" style="display:grid; grid-template-columns:1.3fr 0.9fr; gap:22px; align-items:center;">
+        <div>
+            <h1>Salom, <span>{{ request.user.username }}</span></h1>
+            <p>Bu yerda siz kurslaringizni ko'rishingiz, darslarni davom ettirishingiz va sertifikatlarni olishingiz mumkin.</p>
+
+            <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <div class="stat-card">
+                    <div class="value">{{ active_courses }}</div>
+                    <h3>Faol kurslar</h3>
+                </div>
+                <div class="stat-card">
+                    <div class="value">{{ completed_courses }}</div>
+                    <h3>Tugallangan kurslar</h3>
+                </div>
+                <div class="stat-card">
+                    <div class="value">{{ progress_percent }}%</div>
+                    <h3>Umumiy progress</h3>
+                </div>
+                <div class="stat-card">
+                    <div class="value">{{ completed_courses }}</div>
+                    <h3>Sertifikatlar</h3>
+                </div>
+            </div>
+        </div>
+
+        <div style="background:var(--gradient); color:white; border-radius:24px; padding:28px;">
+            <h3 style="font-family:'Nunito',sans-serif; font-size:1.4rem; font-weight:900; margin-bottom:10px;">Bugungi maqsad</h3>
+            <p style="color:rgba(255,255,255,0.9); margin-bottom:18px;">Kamida bitta darsni yakunlang va progress foizingizni oshiring.</p>
+            <div style="background:rgba(255,255,255,0.18); border-radius:18px; padding:16px;">
+                <strong style="display:block; margin-bottom:10px;">Umumiy progress</strong>
+                <div style="width:100%; height:10px; background:rgba(255,255,255,0.25); border-radius:999px; overflow:hidden; margin-bottom:8px;">
+                    <div style="width:{{ progress_percent }}%; height:100%; background:white; border-radius:999px;"></div>
+                </div>
+                <span>{{ progress_percent }}% bajarildi</span>
+            </div>
+        </div>
+    </section>
+
+    <section style="display:grid; grid-template-columns:1.2fr 0.8fr; gap:22px;">
+        <div class="card">
+            <h2>So'nggi kurslar</h2>
+            {% for enrollment in recent_enrollments %}
+            <div style="border:1px solid var(--border); border-radius:16px; padding:16px; margin-bottom:14px;">
+                <h4 style="font-family:'Nunito',sans-serif; font-weight:800; margin-bottom:6px;">{{ enrollment.course.title }}</h4>
+                <p style="color:var(--muted); margin-bottom:10px;">{{ enrollment.course.description|truncatewords:15 }}</p>
+                {% if enrollment.completed %}
+                <span class="badge badge-success">Tugallangan</span>
+                {% else %}
+                <span class="badge badge-student">Davom etmoqda</span>
+                {% endif %}
+            </div>
+            {% empty %}
+            <p class="empty-state">Hali kursga yozilmagansiz</p>
+            {% endfor %}
+        </div>
+
+        <div class="card">
+            <h2>Tezkor havolalar</h2>
+            <div style="display:grid; gap:12px;">
+                <a href="{% url 'student_courses' %}" style="background:#faf5ff; border:1px solid #f1e6ff; padding:14px 16px; border-radius:14px; font-weight:700; transition:0.2s;">📚 Barcha kurslar</a>
+                <a href="{% url 'student_dashboard' %}" style="background:#faf5ff; border:1px solid #f1e6ff; padding:14px 16px; border-radius:14px; font-weight:700; transition:0.2s;">🏠 Student dashboard</a>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

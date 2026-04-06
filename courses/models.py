@@ -37,6 +37,23 @@ class Lesson(models.Model):
     module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='lessons')
     title = models.CharField(max_length=200)
     video = models.FileField(upload_to='lesson_videos/', null=True, blank=True)
+    video_thumbnail = models.ImageField(
+        upload_to='lesson_thumbnails/', null=True, blank=True,
+        help_text="Avtomatik yaratiladi"
+    )
+    video_duration = models.CharField(
+        max_length=20, blank=True, null=True,
+        help_text="Video davomiyligi (HH:MM:SS)"
+    )
+    original_video_size = models.PositiveIntegerField(
+        null=True, blank=True,
+        help_text="Original hajm (bayt)"
+    )
+    compressed_video_size = models.PositiveIntegerField(
+        null=True, blank=True,
+        help_text="Siqilgan hajm (bayt)"
+    )
+    is_video_compressed = models.BooleanField(default=False)
     content = models.TextField(blank=True, null=True)
     pdf = models.FileField(upload_to='lesson_pdfs/', null=True, blank=True)
     preview = models.BooleanField(default=False)
@@ -44,6 +61,39 @@ class Lesson(models.Model):
 
     def __str__(self):
         return f"{self.module.title} - {self.title}"
+
+    @property
+    def original_size_display(self):
+        """Original hajmni o'qilishi oson formatda ko'rsatish"""
+        if self.original_video_size:
+            return self._format_size(self.original_video_size)
+        return None
+
+    @property
+    def compressed_size_display(self):
+        """Siqilgan hajmni o'qilishi oson formatda ko'rsatish"""
+        if self.compressed_video_size:
+            return self._format_size(self.compressed_video_size)
+        return None
+
+    @property
+    def compression_ratio(self):
+        """Siqish foizini hisoblash"""
+        if self.original_video_size and self.compressed_video_size:
+            return round(
+                (1 - self.compressed_video_size / self.original_video_size) * 100, 1
+            )
+        return 0
+
+    @staticmethod
+    def _format_size(size_bytes):
+        if size_bytes < 1024:
+            return f"{size_bytes} B"
+        elif size_bytes < 1024 * 1024:
+            return f"{size_bytes / 1024:.1f} KB"
+        elif size_bytes < 1024 * 1024 * 1024:
+            return f"{size_bytes / (1024 * 1024):.1f} MB"
+        return f"{size_bytes / (1024 * 1024 * 1024):.1f} GB"
 
 class Enrollment(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'role': 'student'})

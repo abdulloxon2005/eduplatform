@@ -1,27 +1,85 @@
-<h1>Darslar - {{ module.title }}</h1>
+{% extends "base.html" %}
+{% block title %}Darslar — {{ module.title }} | EduPlatform{% endblock %}
 
-<!-- Yangi dars qo‘shish formasi -->
-<h2>Yangi dars qo‘shish</h2>
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Saqlash</button>
-</form>
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1>Darslar — {{ module.title }}</h1>
+            <p>Modul darslarini boshqaring va yangilarini qo'shing</p>
+        </div>
+        <a href="{% url 'admin_modules' course_id %}" class="back-btn">← Modullar</a>
+    </div>
 
-<!-- Darslar ro‘yxati -->
-<h2>Mavjud darslar</h2>
-<ul>
-    {% for lesson in lessons %}
-    <li>
-        {{ lesson.title }} - Preview: {{ lesson.preview }} (Order: {{ lesson.order }})
-        |
-        <a href="{% url 'admin_edit_lesson' course_id module.id lesson.id %}">Tahrirlash</a>
-        |
-        <a href="{% url 'admin_delete_lesson' course_id module.id lesson.id %}">O‘chirish</a>
-    </li>
-    {% empty %}
-    <li>Dars topilmadi</li>
-    {% endfor %}
-</ul>
+    <div class="card" style="margin-bottom:24px;">
+        <h2>Yangi dars qo'shish</h2>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary" style="margin-top:12px;">Saqlash</button>
+        </form>
+        <p style="color:var(--muted); font-size:0.85rem; margin-top:12px;">
+            💡 Video yuklanganda avtomatik siqiladi (720p, H.264). Bu jarayonda bir oz vaqt ketishi mumkin.
+        </p>
+    </div>
 
-<a href="{% url 'admin_modules' course_id %}">Orqaga modul ro‘yxatiga</a>
+    <div class="card">
+        <h2>Mavjud darslar</h2>
+        <ul class="item-list">
+            {% for lesson in lessons %}
+            <li>
+                <div class="item-info" style="flex:1;">
+                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:6px;">
+                        {% if lesson.video_thumbnail %}
+                        <img src="{{ lesson.video_thumbnail.url }}" alt="Thumbnail"
+                             style="width:80px; height:45px; object-fit:cover; border-radius:8px;">
+                        {% endif %}
+                        <div>
+                            <h4>{{ lesson.title }}</h4>
+                            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:4px;">
+                                <span style="color:var(--muted); font-size:0.82rem;">
+                                    Tartib: {{ lesson.order }}
+                                </span>
+                                {% if lesson.preview %}
+                                <span class="badge badge-active" style="font-size:0.75rem;">Preview</span>
+                                {% endif %}
+                                {% if lesson.video_duration %}
+                                <span style="color:var(--muted); font-size:0.82rem;">
+                                    ⏱ {{ lesson.video_duration }}
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if lesson.is_video_compressed and lesson.original_video_size %}
+                    <div style="background:linear-gradient(135deg, #f0fdf4, #ecfdf5); border:1px solid #bbf7d0; border-radius:10px; padding:8px 12px; margin-top:8px; font-size:0.82rem;">
+                        <strong style="color:#16a34a;">✅ Siqilgan</strong> |
+                        Original: <strong>{{ lesson.original_size_display }}</strong> →
+                        Siqilgan: <strong>{{ lesson.compressed_size_display }}</strong>
+                        {% if lesson.compression_ratio > 0 %}
+                        | <strong style="color:#16a34a;">{{ lesson.compression_ratio }}% kamaytirish</strong>
+                        {% endif %}
+                    </div>
+                    {% elif lesson.video %}
+                    <div style="background:#fef3c7; border:1px solid #fde68a; border-radius:10px; padding:8px 12px; margin-top:8px; font-size:0.82rem;">
+                        <strong style="color:#d97706;">⏳ Siqilmoqda yoki kutilmoqda...</strong>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="actions">
+                    <a href="{% url 'admin_edit_lesson' course_id module.id lesson.id %}" class="action-btn btn-edit">Tahrirlash</a>
+                    <form method="POST" action="{% url 'admin_delete_lesson' course_id module.id lesson.id %}" style="display:inline;" onsubmit="return confirm('Darsni o\'chirmoqchimisiz?');">
+                        {% csrf_token %}
+                        <button type="submit" class="action-btn btn-delete">O'chirish</button>
+                    </form>
+                </div>
+            </li>
+            {% empty %}
+            <li class="empty-state">Dars topilmadi</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

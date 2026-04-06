@@ -1,28 +1,22 @@
-<!DOCTYPE html>
-<html lang="uz">
-<head>
-    <meta charset="UTF-8">
-    <title>Kurs qo‘shish / tahrirlash</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 30px; background: #f0f2f5; }
-        form { background: white; padding: 20px; border-radius: 5px; width: 600px; }
-        label { display: block; margin-top: 10px; font-weight: bold; }
-        input, select, textarea { width: 100%; padding: 8px; margin-top: 5px; border-radius: 5px; border: 1px solid #ccc; }
-        button { margin-top: 15px; padding: 10px 15px; border: none; border-radius: 5px; background: #007bff; color: white; cursor: pointer; }
-        button:hover { background: #0056b3; }
-    </style>
-</head>
-<body>
-    <h1>Kurs qo‘shish / tahrirlash</h1>
+{% extends "base.html" %}
+{% block title %}Kurs qo'shish | EduPlatform{% endblock %}
 
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Saqlash</button>
-    </form>
-
-    <div style="margin-top:20px;">
-        <a href="{% url 'admin_courses' %}">Orqaga</a>
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1>{% if editing %}Kursni tahrirlash{% else %}Yangi kurs qo'shish{% endif %}</h1>
+            <p>Kurs ma'lumotlarini to'ldiring</p>
+        </div>
+        <a href="{% url 'admin_courses' %}" class="back-btn">← Orqaga</a>
     </div>
-</body>
-</html>
+
+    <div class="form-card">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary" style="width:100%; margin-top:16px;">Saqlash</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

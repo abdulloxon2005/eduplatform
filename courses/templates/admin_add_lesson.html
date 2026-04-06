@@ -1,9 +1,22 @@
-<h1>Dars qo‘shish - {{ module.title }}</h1>
+{% extends "base.html" %}
+{% block title %}Dars qo'shish | EduPlatform{% endblock %}
 
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Saqlash</button>
-</form>
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1>Dars qo'shish — {{ module.title }}</h1>
+            <p>Yangi dars ma'lumotlarini kiriting</p>
+        </div>
+        <a href="{% url 'admin_lessons' course_id module.id %}" class="back-btn">← Orqaga</a>
+    </div>
 
-<a href="{% url 'admin_lessons' module.course.id module.id %}">Orqaga</a>
+    <div class="form-card">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary" style="width:100%; margin-top:16px;">Saqlash</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

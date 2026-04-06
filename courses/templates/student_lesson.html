@@ -1,165 +1,103 @@
-<!DOCTYPE html>
-<html lang="uz">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ lesson.title }}</title>
+{% extends "base.html" %}
+{% block title %}{{ lesson.title }} | EduPlatform{% endblock %}
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1>{{ lesson.title }}</h1>
+            <p>{{ module.title }} — {{ course.title }}</p>
+        </div>
+        <a href="{% url 'student_course_detail' course.id %}" class="back-btn">← Kursga qaytish</a>
+    </div>
 
-        video {
-            width: 100%;
-            max-width: 720px;
-            margin-bottom: 20px;
-        }
+    <div class="lesson-layout">
+        <!-- Asosiy kontent -->
+        <div class="lesson-content">
+            <!-- Kurs progressi -->
+            <div class="card" style="margin-bottom:20px;">
+                <h2>Kurs progressi: {{ progress_percent }}%</h2>
+                <div class="progress">
+                    <div class="progress-bar" style="width: {{ progress_percent }}%;"></div>
+                </div>
+                <p style="color:var(--muted); font-size:0.85rem; margin-top:4px;">Modul progressi: {{ module_progress_percent }}%</p>
+                <div class="progress">
+                    <div class="progress-bar" style="width: {{ module_progress_percent }}%;"></div>
+                </div>
+            </div>
 
-        .pdf-link {
-            display: inline-block;
-            margin: 15px 0;
-        }
+            <!-- Dars matni -->
+            {% if lesson.content %}
+            <div class="card" style="margin-bottom:20px;">
+                <h2>Dars matni</h2>
+                <div style="line-height:1.8;">{{ lesson.content|linebreaks }}</div>
+            </div>
+            {% endif %}
 
-        .progress {
-            background: #eee;
-            width: 100%;
-            height: 22px;
-            border-radius: 10px;
-            margin: 20px 0;
-            overflow: hidden;
-        }
+            <!-- Video -->
+            {% if lesson.video %}
+            <div class="card" style="margin-bottom:20px;">
+                <h2>Video dars</h2>
+                <video controls style="width:100%; border-radius:12px; margin-top:12px;">
+                    <source src="{{ lesson.video.url }}">
+                    Brauzeringiz videoni qo'llab-quvvatlamaydi.
+                </video>
+            </div>
+            {% endif %}
 
-        .progress-bar {
-            background: #4CAF50;
-            height: 100%;
-            width: {{ progress_percent }}%;
-            text-align: center;
-            color: white;
-            line-height: 22px;
-            font-size: 14px;
-        }
+            <!-- PDF -->
+            {% if lesson.pdf %}
+            <div class="card" style="margin-bottom:20px;">
+                <h2>PDF Material</h2>
+                <a href="{{ lesson.pdf.url }}" target="_blank" class="btn btn-light" style="margin-top:8px;">📄 PDF yuklab olish</a>
+            </div>
+            {% endif %}
 
-        button {
-            padding: 10px 20px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-        }
+            <!-- Material yo'q -->
+            {% if not lesson.video and not lesson.pdf and not lesson.content %}
+            <div class="card" style="margin-bottom:20px;">
+                <p class="empty-state">Bu darsda hali material mavjud emas.</p>
+            </div>
+            {% endif %}
 
-        button:hover {
-            background: #45a049;
-        }
+            <!-- Tugatish tugmasi -->
+            <div class="card">
+                {% if not is_completed %}
+                <form method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary" style="width:100%; padding:16px; font-size:1rem;">Darsni tugatdim ✅</button>
+                </form>
+                {% else %}
+                <p style="color:var(--success); font-weight:700; text-align:center; font-size:1.1rem;">✔ Bu dars tugatilgan</p>
+                {% endif %}
 
-        .completed-text {
-            color: green;
-            font-weight: bold;
-            margin-top: 15px;
-        }
-    </style>
-</head>
+                {% if progress_percent == 100 %}
+                <a href="{% url 'generate_certificate' course.id %}" class="btn btn-primary" style="width:100%; margin-top:12px; text-align:center;">🎓 Sertifikatni yuklab olish</a>
+                {% endif %}
+            </div>
+        </div>
 
-<body>
-
-<h1>{{ lesson.title }}</h1>
-
-<!-- ✅ PROGRESS BAR -->
-<div class="progress">
-    <div class="progress-bar">
-        {{ progress_percent }}%
+        <!-- Sidebar: modul darslari -->
+        <div>
+            <div class="card">
+                <h2>Modul darslari</h2>
+                {% for l in module_lessons %}
+                    {% if l.id in completed_ids %}
+                    <a href="{% url 'student_lesson_view' course.id module.id l.id %}" class="sidebar-item completed" style="display:flex; align-items:center; gap:10px; padding:12px 14px; border-radius:10px; margin-bottom:6px; font-size:0.9rem; font-weight:600; color:var(--success);">
+                        ✔ {{ l.title }}
+                    </a>
+                    {% elif l.id == lesson.id %}
+                    <div class="sidebar-item active" style="display:flex; align-items:center; gap:10px; padding:12px 14px; border-radius:10px; margin-bottom:6px; font-size:0.9rem; font-weight:600; background:#f3e8ff; color:var(--primary-dark);">
+                        ▶ {{ l.title }}
+                    </div>
+                    {% else %}
+                    <div class="sidebar-item locked" style="display:flex; align-items:center; gap:10px; padding:12px 14px; border-radius:10px; margin-bottom:6px; font-size:0.9rem; font-weight:600; color:var(--muted);">
+                        🔒 {{ l.title }}
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
     </div>
 </div>
-
-<h3>Modul progress:</h3>
-<div class="progress">
-    <div class="progress-bar">
-        {{ module_progress_percent }}%
-    </div>
-</div>
-
-<hr>
-<h3>Modul darslari:</h3>
-
-<ul style="list-style:none; padding:0;">
-{% for l in module_lessons %}
-
-    {% if l.id in completed_ids %}
-        <!-- Tugatilgan -->
-        <li style="margin-bottom:8px;">
-            <a href="{% url 'student_lesson_view' lesson.module.course.id lesson.module.id l.id %}"
-               style="color:green; font-weight:bold;">
-               ✔ {{ l.title }}
-            </a>
-        </li>
-
-    {% elif l.order == lesson.order or l.order == lesson.order|add:1 %}
-        <!-- Hozirgi yoki keyingi ochiq -->
-        <li style="margin-bottom:8px;">
-            <a href="{% url 'student_lesson_view' lesson.module.course.id lesson.module.id l.id %}">
-                ▶ {{ l.title }}
-            </a>
-        </li>
-
-    {% else %}
-        <!-- Qulflangan -->
-        <li style="margin-bottom:8px; color:gray;">
-            🔒 {{ l.title }}
-        </li>
-    {% endif %}
-
-{% endfor %}
-</ul>
-
-<hr>
-
-<!-- ✅ TEXT CONTENT -->
-{% if lesson.content %}
-    <div>
-        <h3>Dars matni:</h3>
-        <p>{{ lesson.content|linebreaks }}</p>
-    </div>
-{% endif %}
-
-<!-- ✅ VIDEO (agar mavjud bo‘lsa) -->
-{% if lesson.video %}
-    <video controls>
-        <source src="{{ lesson.video.url }}">
-        Brauzeringiz videoni qo'llab-quvvatlamaydi.
-    </video>
-{% endif %}
-
-<!-- ✅ PDF (agar mavjud bo‘lsa) -->
-{% if lesson.pdf %}
-    <div>
-        <a class="pdf-link" href="{{ lesson.pdf.url }}" target="_blank">
-            📄 PDF yuklab olish
-        </a>
-    </div>
-{% endif %}
-
-<!-- ✅ Agar umuman material bo‘lmasa -->
-{% if not lesson.video and not lesson.pdf and not lesson.content %}
-    <p>Bu darsda hali material mavjud emas.</p>
-{% endif %}
-
-<!-- ✅ COMPLETED BUTTON -->
-{% if not is_completed %}
-    <form method="POST">
-        {% csrf_token %}
-        <button type="submit">Darsni tugatdim ✅</button>
-    </form>
-{% else %}
-    <p class="completed-text">✔ Bu dars tugatilgan</p>
-{% endif %}
-{% if progress_percent == 100 %}
-    <hr>
-    <a href="{% url 'generate_certificate' lesson.module.course.id %}">
-        🎓 Sertifikatni yuklab olish
-    </a>
-{% endif %}
-
-
-</body>
-</html>
+{% endblock %}

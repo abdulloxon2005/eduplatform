@@ -1,37 +1,65 @@
-<h1>{{ course.title }}</h1>
-<p>{{ course.description }}</p>
-<p>Davomiyligi: {{ course.duration }} dars</p>
+{% extends "base.html" %}
+{% block title %}{{ course.title }} | EduPlatform{% endblock %}
 
-<h2>Modullar</h2>
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1>{{ course.title }}</h1>
+            <p>{{ course.description|truncatewords:30 }}</p>
+        </div>
+        <a href="{% url 'student_courses' %}" class="back-btn">← Kurslar</a>
+    </div>
 
-{% if modules %}
-<ul>
-    {% for module in modules %}
-    <li>
-        <strong>{{ module.title }}</strong>
+    <div style="display:grid; grid-template-columns:1fr 300px; gap:24px;">
+        <div>
+            <div class="card" style="margin-bottom:16px;">
+                <p style="color:var(--muted); margin-bottom:12px;">{{ course.description }}</p>
+                <div style="display:flex; gap:20px; flex-wrap:wrap;">
+                    <span class="badge badge-student">⏱ {{ course.duration }}</span>
+                    {% if course.price > 0 %}
+                    <span class="badge badge-admin">💰 {{ course.price }} so'm</span>
+                    {% else %}
+                    <span class="badge badge-success">Bepul</span>
+                    {% endif %}
+                </div>
+            </div>
 
-        {% with lessons=module.lessons.all|dictsort:"order" %}
-        {% if lessons %}
-        <ul>
-            {% for lesson in lessons %}
-            <li>
-                {% if lesson.preview or enrolled %}
-                    <a href="{% url 'student_lesson_view' course.id module.id lesson.id %}">
-                        {{ lesson.title }}
-                    </a>
+            {% for module in modules %}
+            <div class="card" style="margin-bottom:16px;">
+                <h2>📁 {{ module.title }}</h2>
+                {% with lessons=module.lessons.all|dictsort:"order" %}
+                {% if lessons %}
+                <ul class="item-list">
+                    {% for lesson in lessons %}
+                    <li>
+                        <div class="item-info">
+                            <h4>{{ lesson.title }}</h4>
+                            <span>{% if lesson.preview %}Preview{% else %}Kurs darsi{% endif %}</span>
+                        </div>
+                        {% if lesson.preview or enrolled %}
+                        <a href="{% url 'student_lesson_view' course.id module.id lesson.id %}" class="btn btn-primary btn-sm">Ochish →</a>
+                        {% else %}
+                        <span class="badge badge-blocked">🔒 Qulflangan</span>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
                 {% else %}
-                    {{ lesson.title }} 🔒
+                <p class="empty-state">Darslar mavjud emas</p>
                 {% endif %}
-            </li>
+                {% endwith %}
+            </div>
+            {% empty %}
+            <div class="empty-state">Modullar mavjud emas</div>
             {% endfor %}
-        </ul>
-        {% else %}
-            <p>Darslar mavjud emas</p>
-        {% endif %}
-        {% endwith %}
-    </li>
-    {% endfor %}
-</ul>
-{% else %}
-<p>Modullar mavjud emas</p>
-{% endif %}
+        </div>
+
+        <div>
+            {% if course.cover_image %}
+            <img src="{{ course.cover_image.url }}" alt="{{ course.title }}" style="width:100%; border-radius:16px; margin-bottom:16px;">
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

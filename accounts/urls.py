@@ -1,4 +1,4 @@
-from django.urls import include,path
+from django.urls import path
 from .views import (
     register_view,
     login_view,
@@ -8,7 +8,8 @@ from .views import (
     home_view,
     admin_users_view,
     toggle_active,
-    delete_user,change_role 
+    delete_user,
+    change_role,
 )
 
 urlpatterns = [
@@ -26,6 +27,4 @@ urlpatterns = [
     path('manager/users/toggle/<int:user_id>/', toggle_active, name='toggle_active'),
     path('manager/users/delete/<int:user_id>/', delete_user, name='delete_user'),
     path('manager/users/change-role/<int:user_id>/', change_role, name='change_role'),
-    path('maneger/courses/', include('courses.urls')),
-    path('student/courses/', include('courses.urls')),
 ]

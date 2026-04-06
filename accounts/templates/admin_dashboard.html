@@ -1,8 +1,54 @@
-<h1>Salom Admin 👑</h1>
+{% extends "base.html" %}
+{% block title %}Admin Dashboard | EduPlatform{% endblock %}
 
-<p>Xush kelibsiz {{ request.user.username }}</p>
+{% block content %}
+<div class="container">
+    <div class="topbar">
+        <div class="logo">
+            <div class="logo-icon">👑</div>
+            EduPlatform Admin
+        </div>
+        <form method="POST" action="{% url 'logout' %}" class="logout-form">
+            {% csrf_token %}
+            <button type="submit">Chiqish</button>
+        </form>
+    </div>
 
-<a href="{% url 'admin_users' %}">Foydalanuvchilar</a>
-<a href="{% url 'admin_courses' %}">courses</a>
+    <div class="hero-card">
+        <h1>Salom, <span>{{ request.user.username }}</span> 👑</h1>
+        <p>Admin panel orqali foydalanuvchilarni, kurslarni, modullarni va darslarni boshqarishingiz mumkin.</p>
 
-<a href="{% url 'logout' %}">Logout</a>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Foydalanuvchilar</h3>
+                <div class="value">{{ user_count }}</div>
+            </div>
+            <div class="stat-card">
+                <h3>Kurslar</h3>
+                <div class="value">{{ course_count }}</div>
+            </div>
+            <div class="stat-card">
+                <h3>Modullar</h3>
+                <div class="value">{{ module_count }}</div>
+            </div>
+            <div class="stat-card">
+                <h3>Darslar</h3>
+                <div class="value">{{ lesson_count }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="actions-grid">
+        <div class="action-card">
+            <h2>Foydalanuvchilar boshqaruvi</h2>
+            <p>Foydalanuvchilarni qidirish, bloklash, aktivlashtirish, o'chirish va role almashtirish.</p>
+            <a href="{% url 'admin_users' %}" class="btn btn-primary">Foydalanuvchilarni ko'rish</a>
+        </div>
+        <div class="action-card">
+            <h2>Kurslar boshqaruvi</h2>
+            <p>Kurslar, modullar va darslarni qo'shish, tahrirlash va o'chirish.</p>
+            <a href="{% url 'admin_courses' %}" class="btn btn-primary">Kurslarni boshqarish</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

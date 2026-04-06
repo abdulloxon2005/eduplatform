@@ -1,5 +1,13 @@
-<h2>🔒 Dars bloklangan</h2>
+{% extends "base.html" %}
+{% block title %}Dars bloklangan | EduPlatform{% endblock %}
 
-<p>{{ reason }}</p>
-
-<a href="javascript:history.back()">Ortga qaytish</a>
+{% block content %}
+<div class="container">
+    <div class="locked-page">
+        <div class="emoji">🔒</div>
+        <h2>Dars bloklangan</h2>
+        <p>{{ reason|default:"Bu darsga kirish uchun avval kursga yozilishingiz kerak." }}</p>
+        <a href="javascript:history.back()" class="btn btn-primary">← Ortga qaytish</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,34 +1,22 @@
-<!DOCTYPE html>
-<html lang="uz">
-<head>
-    <meta charset="UTF-8">
-    <title>Darsni tahrirlash - {{ lesson.title }}</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        form { margin-bottom: 20px; }
-        label { display: block; margin-top: 10px; font-weight: bold; }
-        input, textarea { width: 100%; padding: 8px; margin-top: 5px; }
-        button { padding: 10px 20px; margin-top: 15px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
-        button:hover { background-color: #45a049; }
-        a { text-decoration: none; color: #333; }
-        a:hover { text-decoration: underline; }
-    </style>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Darsni tahrirlash — {{ lesson.title }} | EduPlatform{% endblock %}
 
-<h1>Darsni tahrirlash</h1>
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <div>
+            <h1>Darsni tahrirlash — {{ lesson.title }}</h1>
+            <p>Dars ma'lumotlarini yangilang</p>
+        </div>
+        <a href="{% url 'admin_lessons' course_id module_id %}" class="back-btn">← Orqaga</a>
+    </div>
 
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    
-    <!-- Form maydonlari -->
-    {{ form.as_p }}
-
-    <button type="submit">Saqlash</button>
-</form>
-
-<!-- Orqaga tugma -->
-<a href="{% url 'admin_lessons' course_id module_id %}">Orqaga darslar ro‘yxatiga</a>
-
-</body>
-</html>
+    <div class="form-card">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary" style="width:100%; margin-top:16px;">Saqlash</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
